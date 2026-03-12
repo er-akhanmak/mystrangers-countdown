@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import MystrangersLogo from './components/MystrangersLogo';
 import CountdownTimer from './components/CountdownTimer';
+import EduSignup from './components/EduSignup';
 import BurgerMenu from './components/BurgerMenu';
 import TabsAndCards from './pages/TabsAndCards';
 import headerLogoIcon from './assets/mystr-logo-icon2-thick.PNG';
@@ -67,6 +68,9 @@ function App() {
             <MystrangersLogo fluid />
           </div>
           <CountdownTimer />
+          <div className="edu-signup-wrap">
+            <EduSignup />
+          </div>
         </div>
       </div>
 
