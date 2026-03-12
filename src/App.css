@@ -1,0 +1,763 @@
+/* Fluid layout: single scrollable page – content starts below header */
+.page {
+  min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
+  padding-top: var(--header-height, 56px);
+}
+
+/* Fixed header: contains logo left, burger right */
+.app-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: var(--header-height, 56px);
+  padding: clamp(0.5rem, 2vw, 0.75rem) clamp(1rem, 4vw, 1.5rem);
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+  box-sizing: border-box;
+}
+
+.header-logo-icon {
+  width: clamp(2.5rem, 7.5vw, 2.5rem);
+  height: clamp(2.5rem, 7.5vw, 2.5rem);
+  object-fit: contain;
+  display: block;
+}
+
+.header-logo-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: opacity 0.2s ease, background 0.2s ease;
+}
+.header-logo-btn:hover {
+  opacity: 0.9;
+  background: rgba(255, 255, 255, 0.06);
+}
+.header-logo-btn:focus-visible {
+  outline: 2px solid var(--primary-start);
+  outline-offset: 2px;
+}
+
+.app-header .burger-wrap {
+  position: relative;
+  top: auto;
+  right: auto;
+}
+
+/* Scroll-driven hero: shrinks and slides up; sits below header */
+.hero-wrapper--scroll {
+  position: fixed;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  --p: var(--hero-progress, 0);
+  /* Centered in area below header; then slides up */
+  top: calc(var(--header-height, 56px) + 42% * (100vh - var(--header-height, 56px)));
+  transform: translateY(calc(-50% - 48vh * var(--p))) scale(calc(1 - 0.55 * var(--p)));
+  max-height: calc(90vh * (1 - var(--p)) + var(--hero-compact-height, 440px) * var(--p));
+  transition: none;
+  pointer-events: none;
+}
+
+/* When fully scrolled: pin wrapper just below header */
+.hero-wrapper--scroll.hero-wrapper--pinned {
+  top: var(--header-height, 56px);
+  transform: scale(0.45);
+  max-height: var(--hero-compact-height, 440px);
+}
+
+.hero-wrapper--scroll.hero-wrapper--pinned .countdown {
+  transform: scale(1.2);
+}
+
+.hero-wrapper--scroll .hero {
+  pointer-events: auto;
+}
+
+.hero-wrapper--scroll .hero-logo-wrap,
+.hero-wrapper--scroll .logo-wrap {
+  opacity: calc(1 - var(--p));
+  max-height: calc(100px * (1 - var(--p)) + 0px * var(--p));
+  overflow: hidden;
+  margin-bottom: calc(clamp(1.5rem, 5vw, 3rem) * (1 - var(--p)));
+  padding: calc(clamp(1rem, 3vw, 2rem) * (1 - var(--p)));
+  transition: none;
+}
+
+/* When scrolled: header bar look (border + bg) */
+.hero-wrapper--scroll::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg);
+  opacity: var(--p);
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* Timer at top of header when scrolled up */
+.hero-wrapper--scroll.hero-wrapper--at-top {
+  justify-content: flex-start;
+  padding-top: clamp(0.5rem, 2vw, 1rem);
+}
+
+/* Timer scales up in header when scrolled (minimized = 2x current size) */
+.hero-wrapper--scroll .countdown {
+  transform: scale(calc(1 + 0.2 * var(--p)));
+  transform-origin: center center;
+  transition: none;
+}
+
+/* Text under timer: same size while scrolling, then transitions to 4× when pinned */
+.hero-wrapper--scroll .countdown-to {
+  transform: scale(calc(1 / (1 + 0.2 * var(--p))));
+  transform-origin: top center;
+  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hero-wrapper--scroll.hero-wrapper--pinned .countdown-to {
+  transform: scale(2.5);
+  transition: transform 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Text under timer 4× in compact bar */
+.hero-wrapper--compact .countdown-to {
+  transform: scale(4);
+  transform-origin: top center;
+  transition: transform 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Spacer: height matches scroll range so tabs are in view as timer reaches top */
+.hero-spacer {
+  height: 520px;
+  flex-shrink: 0;
+}
+
+.hero-wrapper {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  max-height: 90vh;
+  transition:
+    top 0.6s cubic-bezier(0.4, 0, 0.2, 1),
+    transform 0.6s cubic-bezier(0.4, 0, 0.2, 1),
+    max-height 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Slid up to top, same full timer centered in bar */
+.hero-wrapper--compact {
+  top: 0;
+  transform: translateY(0);
+  max-height: var(--hero-compact-height, 440px);
+  justify-content: center;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg);
+}
+
+/* Timer is 2x size when minimized */
+.hero-wrapper--compact .countdown {
+  transform: scale(2);
+  transform-origin: center center;
+}
+
+.hero-wrapper--compact .hero-logo-wrap,
+.hero-wrapper--compact .logo-wrap {
+  opacity: 0;
+  max-height: 0;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  pointer-events: none;
+  transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1), max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Header: logo centered, burger fixed top-right */
+.header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(0.75rem, 3vw, 1.25rem) clamp(3rem, 8vw, 2rem) clamp(0.75rem, 3vw, 1.25rem);
+  pointer-events: none;
+}
+.header > * {
+  pointer-events: auto;
+}
+
+/* Shared column: logo + timer centered together */
+.hero {
+  display: block;
+  width: 100%;
+  max-width: min(720px, 92vw);
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: clamp(1rem, 4vw, 2.5rem);
+  padding-right: clamp(1rem, 4vw, 2.5rem);
+  box-sizing: border-box;
+  transition: padding 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hero > * {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Logo above timer – fluid, fades and collapses when hero is compact */
+.hero-logo-wrap,
+.logo-wrap {
+  margin-bottom: clamp(1.5rem, 5vw, 3rem);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: clamp(1rem, 3vw, 2rem);
+  overflow: visible;
+  max-width: 100%;
+  width: min(100%, clamp(320px, 48vw, 560px));
+  margin-left: auto;
+  margin-right: auto;
+  box-sizing: border-box;
+  transition: opacity 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.logo-wrap svg,
+.hero-logo-wrap svg,
+.logo-wrap img,
+.hero-logo-wrap img {
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  overflow: visible;
+  min-width: 0;
+  display: block;
+}
+
+/* Burger: fixed top-right, always visible */
+.burger-wrap {
+  position: fixed;
+  top: clamp(0.75rem, 3vw, 1.25rem);
+  right: clamp(1rem, 4vw, 1.5rem);
+  z-index: 100;
+}
+
+.burger-trigger {
+  width: clamp(2.5rem, 8vw, 3rem);
+  height: clamp(2.5rem, 8vw, 3rem);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--border);
+  transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+}
+.burger-trigger:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.12);
+}
+.burger-trigger:focus-visible {
+  outline: 2px solid var(--primary-start);
+  outline-offset: 2px;
+}
+
+.burger-bar {
+  display: block;
+  width: 20px;
+  height: 2px;
+  background: var(--text);
+  border-radius: 1px;
+  transition: transform 0.25s ease, opacity 0.25s ease;
+}
+.burger-bar[data-open="true"]:nth-child(1) {
+  transform: translateY(7px) rotate(45deg);
+}
+.burger-bar[data-open="true"]:nth-child(2) {
+  opacity: 0;
+}
+.burger-bar[data-open="true"]:nth-child(3) {
+  transform: translateY(-7px) rotate(-45deg);
+}
+
+.burger-panel {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 0.5rem;
+  min-width: 200px;
+  padding: 0.5rem;
+  background: var(--bg-soft);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-8px);
+  transition: opacity 0.2s ease, visibility 0.2s ease, transform 0.2s ease;
+}
+.burger-panel[data-open="true"] {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.burger-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.burger-link {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 0.65rem 1rem;
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: clamp(0.9rem, 2vw, 1rem);
+  color: var(--text);
+  transition: background 0.15s ease, color 0.15s ease;
+  background: none;
+  cursor: pointer;
+  border: none;
+  font-family: inherit;
+}
+.burger-link:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--primary-start);
+}
+
+/* Countdown: primary gradient styling */
+.countdown {
+  text-align: center;
+  width: 100%;
+}
+
+.countdown-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: clamp(0.5rem, 2vw, 1.25rem);
+  margin-bottom: clamp(1rem, 3vw, 1.5rem);
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 100%;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+@media (max-width: 600px) {
+  .countdown-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Flip card container – clickable */
+.countdown-unit {
+  appearance: none;
+  border: 1px solid var(--border);
+  border-radius: clamp(12px, 3vw, 16px);
+  background: var(--bg-soft);
+  cursor: pointer;
+  padding: 0;
+  height: clamp(100px, 20vw, 140px);
+  position: relative;
+  perspective: 800px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.countdown-unit:hover {
+  border-color: rgba(18, 163, 163, 0.35);
+  box-shadow: 0 8px 24px rgba(18, 163, 163, 0.12);
+}
+
+.countdown-unit-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transform: rotateY(0deg);
+  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: inherit;
+}
+
+.countdown-unit--flipped .countdown-unit-inner {
+  transform: rotateY(180deg);
+}
+
+.countdown-unit-front,
+.countdown-unit-back {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(0.75rem, 3vw, 1.25rem) clamp(0.5rem, 2vw, 1rem);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  border-radius: clamp(12px, 3vw, 16px);
+}
+
+.countdown-unit-front {
+  background: var(--bg-soft);
+  transition: opacity 0.25s ease 0.2s;
+}
+
+.countdown-unit--flipped .countdown-unit-front {
+  opacity: 0;
+  transition-duration: 0s;
+  transition-delay: 0s;
+}
+
+.countdown-unit-back {
+  background: rgba(18, 163, 163, 0.08);
+  border: 1px solid rgba(18, 163, 163, 0.2);
+  transform: rotateY(180deg);
+  border-radius: clamp(12px, 3vw, 16px);
+}
+
+.countdown-value {
+  font-size: clamp(2rem, 6vw + 1rem, 3.5rem);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  background: var(--primary-gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  transition: filter 0.2s ease;
+}
+.countdown-unit:hover .countdown-value {
+  filter: brightness(1.1);
+}
+
+.countdown-label {
+  font-size: clamp(0.7rem, 1.8vw, 0.85rem);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--text-muted);
+  margin-top: 0.35em;
+}
+
+/* Quote on back of card */
+.countdown-quote {
+  font-size: clamp(0.7rem, 1.4vw, 0.85rem);
+  line-height: 1.45;
+  color: var(--text);
+  margin: 0 0 0.75em;
+  font-style: italic;
+}
+
+.countdown-quote-author {
+  font-size: clamp(0.6rem, 1.2vw, 0.75rem);
+  font-weight: 500;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.countdown-to {
+  font-size: 1rem; /* fixed size so it stays the same regardless of timer scale or viewport */
+  color: var(--text-muted);
+  margin: 0;
+  font-weight: 500;
+  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.countdown-done .countdown-message {
+  font-family: Calibri, 'Segoe UI', sans-serif;
+  text-transform: uppercase;
+  font-size: clamp(1.25rem, 3vw, 1.5rem);
+  font-weight: 600;
+  color: #E1306C;
+  margin: 0;
+  -webkit-background-clip: unset;
+  background-clip: unset;
+  background: none;
+}
+
+@media (min-width: 900px) {
+  .countdown-grid {
+    gap: clamp(1rem, 2vw, 1.5rem);
+  }
+  .countdown-unit-front,
+  .countdown-unit-back {
+    padding: clamp(1rem, 2.5vw, 1.5rem);
+  }
+}
+
+/* Compact inline timer for top bar */
+.countdown--compact {
+  width: auto;
+  text-align: left;
+  margin: 0;
+}
+
+.countdown-inline {
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  background: var(--primary-gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.countdown-inline--done {
+  font-family: Calibri, 'Segoe UI', sans-serif;
+  text-transform: uppercase;
+  color: #E1306C;
+  background: none;
+  -webkit-background-clip: unset;
+  background-clip: unset;
+}
+
+/* Page content: slides up from bottom (visible class added after mount so transition runs) */
+.page-content {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 40;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--bg);
+  transform: translateY(100%);
+  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  padding-top: var(--hero-compact-height, 440px);
+  padding-left: clamp(1rem, 4vw, 2.5rem);
+  padding-right: clamp(1rem, 4vw, 2.5rem);
+  padding-bottom: clamp(3rem, 8vw, 5rem);
+  box-sizing: border-box;
+}
+
+.page-content--visible {
+  transform: translateY(0);
+}
+
+/* Tabs + horizontal card swipe – in view as timer reaches top; padding so content sits below fixed header */
+/* Transitional visibility: increases with scroll but stays ≤50% until timer is all the way up */
+.tabs-and-cards {
+  padding-top: var(--hero-compact-height, 440px);
+  padding-left: clamp(1rem, 4vw, 2.5rem);
+  padding-right: clamp(1rem, 4vw, 2.5rem);
+  padding-bottom: clamp(3rem, 8vw, 5rem);
+  min-height: 100vh;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+  opacity: calc(0.1 * var(--hero-progress, 0));
+  transition: opacity 0.25s ease;
+}
+
+.page:has(.hero-wrapper--pinned) .tabs-and-cards {
+  opacity: 1;
+}
+
+.cards-swipe {
+  flex: 1;
+  min-width: 0;
+  min-height: 40vh;
+  overflow: hidden;
+  margin-left: calc(-1 * clamp(1rem, 4vw, 2.5rem));
+  margin-right: calc(-1 * clamp(1rem, 4vw, 2.5rem));
+  padding-left: clamp(1rem, 4vw, 2.5rem);
+  padding-right: clamp(1rem, 4vw, 2.5rem);
+  touch-action: pan-y pinch-zoom;
+}
+
+.cards-track {
+  display: flex;
+  width: 400%;
+  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: transform;
+}
+
+.card {
+  flex: 0 0 25%;
+  width: 25%;
+  min-width: 0;
+  box-sizing: border-box;
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Tabs + all sections in one sliding view */
+.all-sections {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 100%;
+}
+
+.page-tabs {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 0.25rem;
+  padding: clamp(0.75rem, 2vw, 1rem) 0;
+  margin-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+  background: var(--bg);
+  z-index: 1;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+}
+
+.page-tab {
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-size: clamp(0.85rem, 1.8vw, 0.95rem);
+  font-weight: 500;
+  color: var(--text-muted);
+  transition: color 0.2s ease, background 0.2s ease;
+  background: var(--bg-soft);
+  cursor: pointer;
+  border: none;
+  font-family: inherit;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.page-tab:hover {
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.page-tab--active {
+  color: #fff;
+  background: var(--primary-gradient);
+}
+
+.page-sections {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scroll-snap-type: y proximity;
+  scroll-behavior: smooth;
+}
+
+.page-section {
+  min-height: 80vh;
+  scroll-snap-align: start;
+  scroll-snap-stop: normal;
+  padding-bottom: clamp(2rem, 6vw, 4rem);
+}
+
+.page-content-inner {
+  max-width: min(720px, 100%); /* never wider than the card so content doesn't overflow into next */
+  margin: 0 auto;
+  padding: clamp(2rem, 5vw, 4rem) clamp(1rem, 4vw, 2rem) 0;
+  box-sizing: border-box;
+  width: 100%;
+  text-align: left;
+}
+
+@media (max-width: 600px) {
+  .page-content-inner {
+    text-align: center;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+}
+
+.page-title {
+  font-size: clamp(1.75rem, 4vw, 2.25rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin: 0 0 0.75em;
+  color: var(--text);
+}
+
+.page-lead {
+  font-size: clamp(1.05rem, 2vw, 1.2rem);
+  color: var(--text-muted);
+  margin: 0 0 1em;
+  line-height: 1.5;
+}
+
+.page-body {
+  font-size: 1rem;
+  color: var(--text);
+  line-height: 1.6;
+  margin: 0;
+}
+
+.team-member {
+  display: flex;
+  align-items: center;
+  gap: clamp(1.25rem, 4vw, 2rem);
+  margin-top: 1.5rem;
+}
+
+.team-member-photo {
+  width: clamp(120px, 28vw, 180px);
+  height: clamp(120px, 28vw, 180px);
+  object-fit: cover;
+  border-radius: 12px;
+  flex-shrink: 0;
+}
+
+.team-member-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.team-member-name {
+  font-size: clamp(1.25rem, 2.5vw, 1.5rem);
+  font-weight: 600;
+  color: var(--text);
+  margin: 0 0 0.25em;
+}
+
+.team-member-title {
+  font-size: clamp(0.9rem, 1.8vw, 1rem);
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.team-member-detail {
+  font-size: clamp(0.85rem, 1.6vw, 0.95rem);
+  color: var(--text-muted);
+  margin: 0.35em 0 0;
+}
+
+@media (max-width: 600px) {
+  .team-member {
+    flex-direction: column;
+    text-align: center;
+  }
+}
