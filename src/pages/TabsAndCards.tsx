@@ -78,7 +78,7 @@ export default function TabsAndCards() {
           ref={trackRef}
           style={{ transform: `translateX(-${activeIndex * 25}%)` }}
         >
-          {SECTIONS.map((s, i) => (
+          {SECTIONS.map((s) => (
             <div key={s.id} className="card" data-card={s.id}>
               {s.id === 'about' && <AboutUs />}
               {s.id === 'what' && <WhatWeDo />}
