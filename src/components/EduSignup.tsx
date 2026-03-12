@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react';
 
-const FORMSPREE_ID = import.meta.env.VITE_FORMSPREE_SIGNUP_ID as string | undefined;
+const FORMSPREE_ID = (import.meta.env.VITE_FORMSPREE_SIGNUP_ID as string | undefined)?.trim() || undefined;
 
 function isValidEmail(value: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
@@ -11,7 +11,7 @@ function isEduEmail(value: string): boolean {
   return isValidEmail(trimmed) && trimmed.endsWith('.edu');
 }
 
-async function storeEmail(email: string): Promise<boolean> {
+async function storeEmail(email: string): Promise<{ ok: boolean; error?: string }> {
   if (FORMSPREE_ID) {
     try {
       const res = await fetch(`https://formspree.io/f/${FORMSPREE_ID}`, {
@@ -19,9 +19,13 @@ async function storeEmail(email: string): Promise<boolean> {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, _subject: 'mystrangers .edu early signup' }),
       });
-      return res.ok;
-    } catch {
-      return false;
+      if (res.ok) return { ok: true };
+      const text = await res.text();
+      console.error('[EduSignup] Formspree error', res.status, text);
+      return { ok: false, error: res.status === 404 ? 'Form ID not found. Check VITE_FORMSPREE_SIGNUP_ID.' : `Request failed (${res.status}).` };
+    } catch (err) {
+      console.error('[EduSignup] Formspree request failed', err);
+      return { ok: false, error: 'Network error. Check connection or try again.' };
     }
   }
   try {
@@ -30,9 +34,10 @@ async function storeEmail(email: string): Promise<boolean> {
     const list: string[] = raw ? JSON.parse(raw) : [];
     if (!list.includes(email.trim().toLowerCase())) list.push(email.trim().toLowerCase());
     localStorage.setItem(key, JSON.stringify(list));
-    return true;
-  } catch {
-    return false;
+    return { ok: true };
+  } catch (err) {
+    console.error('[EduSignup] localStorage failed', err);
+    return { ok: false, error: 'Could not save locally. Try another browser or disable private mode.' };
   }
 }
 
@@ -73,14 +78,14 @@ export default function EduSignup() {
       return;
     }
     setSubmitting(true);
-    const ok = await storeEmail(trimmed);
+    const result = await storeEmail(trimmed);
     setSubmitting(false);
-    if (ok) {
+    if (result.ok) {
       setSuccess(true);
       setValue('');
       setError(null);
     } else {
-      setError('Something went wrong. Please try again.');
+      setError(result.error ?? 'Something went wrong. Please try again.');
       triggerShake();
     }
   };
