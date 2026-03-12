@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 
 const FORMSPREE_ID = (import.meta.env.VITE_FORMSPREE_SIGNUP_ID as string | undefined)?.trim() || undefined;
 
@@ -54,6 +54,40 @@ export default function EduSignup() {
     const t = setTimeout(() => setShake(false), 600);
     return () => clearTimeout(t);
   };
+
+  const scrollToTop = () => {
+    if (typeof window !== 'undefined') {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
+  const handleEmailFocus = () => {
+    if (typeof window !== 'undefined' && window.matchMedia('(max-width: 600px)').matches) {
+      scrollToTop();
+    }
+  };
+
+  const handleEmailBlur = () => {
+    scrollToTop();
+  };
+
+  /* On mobile: when keyboard is dismissed (visual viewport grows), scroll to top if input not focused */
+  useEffect(() => {
+    const vv = typeof window !== 'undefined' ? window.visualViewport : null;
+    if (!vv) return;
+    let prevHeight = vv.height;
+    const onViewportResize = () => {
+      if (!window.matchMedia('(max-width: 600px)').matches) return;
+      const currentHeight = vv.height;
+      const inputFocused = document.activeElement === inputRef.current;
+      if (!inputFocused && currentHeight > prevHeight + 50) {
+        scrollToTop();
+      }
+      prevHeight = currentHeight;
+    };
+    vv.addEventListener('resize', onViewportResize);
+    return () => vv.removeEventListener('resize', onViewportResize);
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -119,6 +153,15 @@ export default function EduSignup() {
             type="email"
             value={value}
             onChange={(e) => { setValue(e.target.value); setError(null); }}
+            onFocus={handleEmailFocus}
+            onBlur={handleEmailBlur}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                scrollToTop();
+                e.currentTarget.form?.requestSubmit();
+              }
+            }}
             placeholder="Enter .edu email address"
             className="edu-signup-input"
             aria-label=".edu email for early signup"
