@@ -539,6 +539,17 @@
     max-width: min(520px, 96%);
   }
 
+  /* When scrolled up: move timer slightly higher, closer to header (mobile only) */
+  .hero-wrapper--scroll.hero-wrapper--at-top,
+  .hero-wrapper--scroll.hero-wrapper--pinned {
+    padding-top: 0rem;
+  }
+
+  .hero-wrapper--scroll.hero-wrapper--at-top .countdown,
+  .hero-wrapper--scroll.hero-wrapper--pinned .countdown {
+    margin-top: -6.35rem;
+  }
+
   .hero-wrapper--scroll .edu-signup-wrap,
   .hero-wrapper--scroll.hero-wrapper--pinned .edu-signup-wrap,
   .hero-wrapper--compact .edu-signup-wrap {
