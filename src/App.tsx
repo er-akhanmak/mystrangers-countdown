@@ -16,6 +16,12 @@ function App() {
   const [scrollY, setScrollY] = useState(0);
   const progress = Math.min(1, scrollY / HERO_SCROLL_RANGE);
 
+  /* Always start at top on load/refresh so view matches "Home" */
+  useEffect(() => {
+    if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+    window.scrollTo(0, 0);
+  }, []);
+
   useEffect(() => {
     const onScroll = () => setScrollY(window.scrollY);
     onScroll();
