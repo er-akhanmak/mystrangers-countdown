@@ -12,10 +12,13 @@ const HEADER_HEIGHT = 56;
 const HERO_COMPACT_HEIGHT = 440;
 /** Scroll distance (px) over which hero transitions from full to compact */
 const HERO_SCROLL_RANGE = 520;
+/** First N px of scroll do nothing (hero stays full) */
+const SCROLL_DEAD_ZONE = 300;
 
 function App() {
   const [scrollY, setScrollY] = useState(0);
-  const progress = Math.min(1, scrollY / HERO_SCROLL_RANGE);
+  const effectiveScroll = Math.max(0, scrollY - SCROLL_DEAD_ZONE);
+  const progress = Math.min(1, effectiveScroll / (HERO_SCROLL_RANGE - SCROLL_DEAD_ZONE));
 
   /* Always start at top on load/refresh so view matches "Home" */
   useEffect(() => {

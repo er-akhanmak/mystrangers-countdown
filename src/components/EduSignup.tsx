@@ -61,16 +61,6 @@ export default function EduSignup() {
     }
   };
 
-  const scrollToBottom = () => {
-    if (typeof window !== 'undefined') {
-      window.scrollTo({ top: document.documentElement.scrollHeight, behavior: 'smooth' });
-    }
-  };
-
-  const handleEmailFocus = () => {
-    scrollToBottom();
-  };
-
   const handleEmailBlur = () => {
     scrollToTop();
   };
@@ -157,7 +147,6 @@ export default function EduSignup() {
             type="email"
             value={value}
             onChange={(e) => { setValue(e.target.value); setError(null); }}
-            onFocus={handleEmailFocus}
             onBlur={handleEmailBlur}
             onKeyDown={(e) => {
               if (e.key === 'Enter') {
