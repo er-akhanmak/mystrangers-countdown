@@ -157,7 +157,7 @@ export default function CountdownTimer({ compact = false }: { compact?: boolean 
           />
         ))}
       </div>
-      <p className="countdown-to">The evolution of College Social Media </p>
+      <p className="countdown-to">To evolution of College Social Media </p>
     </div>
   );
 }
