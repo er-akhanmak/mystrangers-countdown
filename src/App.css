@@ -110,6 +110,11 @@
   transform-origin: top center;
 }
 
+/* When hero is at top on web, add a bit more gap under timer before signup */
+.hero-wrapper--scroll.hero-wrapper--at-top .edu-signup-wrap {
+  margin-top: clamp(9rem, 5vw, 2.75rem);
+}
+
 .hero-wrapper--scroll.hero-wrapper--pinned .edu-signup-wrap {
   transform: scale(calc(1 / 0.45));
   transform-origin: top center;
@@ -131,6 +136,11 @@
 .hero-wrapper--scroll.hero-wrapper--at-top {
   justify-content: flex-start;
   padding-top: clamp(0.5rem, 2vw, 1rem);
+}
+
+/* On web, tuck the countdown a bit closer to the header when fully scrolled up */
+.hero-wrapper--scroll.hero-wrapper--at-top .countdown {
+  margin-top: -0.75rem;
 }
 
 /* Timer scales up in header when scrolled (minimized = 2x current size) */
