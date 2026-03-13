@@ -112,7 +112,7 @@
 
 /* When hero is at top on web, add a bit more gap under timer before signup */
 .hero-wrapper--scroll.hero-wrapper--at-top .edu-signup-wrap {
-  margin-top: clamp(9rem, 5vw, 2.75rem);
+  margin-top: clamp(4rem, 5vw, 2.75rem);
 }
 
 .hero-wrapper--scroll.hero-wrapper--pinned .edu-signup-wrap {
