@@ -641,6 +641,10 @@
   color: #e11d48;
 }
 
+.edu-signup-message--hint {
+  color: var(--text-muted, #6b7280);
+}
+
 .edu-signup-message--success {
   color: #16a34a;
   font-weight: 500;

@@ -175,9 +175,13 @@ export default function EduSignup() {
           {submitting ? '…' : 'Sign Up'}
         </button>
       </div>
-      {error && (
+      {error ? (
         <p id="edu-signup-error" className="edu-signup-message edu-signup-message--error" role="alert">
           {error}
+        </p>
+      ) : (
+        <p className="edu-signup-message edu-signup-message--hint">
+          First 100 SignUps get a 'free pass' to the launch event - worth $20!
         </p>
       )}
     </form>
