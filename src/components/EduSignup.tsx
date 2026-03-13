@@ -61,10 +61,14 @@ export default function EduSignup() {
     }
   };
 
-  const handleEmailFocus = () => {
-    if (typeof window !== 'undefined' && window.matchMedia('(max-width: 600px)').matches) {
-      scrollToTop();
+  const scrollToBottom = () => {
+    if (typeof window !== 'undefined') {
+      window.scrollTo({ top: document.documentElement.scrollHeight, behavior: 'smooth' });
     }
+  };
+
+  const handleEmailFocus = () => {
+    scrollToBottom();
   };
 
   const handleEmailBlur = () => {
@@ -181,7 +185,7 @@ export default function EduSignup() {
         </p>
       ) : (
         <p className="edu-signup-message edu-signup-message--hint">
-          First 100 SignUps get a 'free pass' to the launch event - worth $20!
+          First 100 SignUps get 'free pass' to launch event - worth $20!
         </p>
       )}
     </form>
