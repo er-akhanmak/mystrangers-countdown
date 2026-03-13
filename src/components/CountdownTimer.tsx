@@ -157,7 +157,7 @@ export default function CountdownTimer({ compact = false }: { compact?: boolean 
           />
         ))}
       </div>
-      <p className="countdown-to">Countdown until mystrangers is LIVE</p>
+      <p className="countdown-to">Countdown to the new age College Social Networking</p>
     </div>
   );
 }
