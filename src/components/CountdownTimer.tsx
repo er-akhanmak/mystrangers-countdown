@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 
-const TARGET = new Date('2026-04-21T00:00:00');
+const TARGET = new Date('2026-05-01T00:00:00');
 
 const QUOTES: { quote: string; author: string }[] = [
   {
